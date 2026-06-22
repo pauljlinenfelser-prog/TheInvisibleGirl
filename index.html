@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>The Invisible Girl — Paul J. Linenfelser</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@200;300;400&display=swap');
+  :root{
+    --dark:#080808; --dark2:#0f0e0c; --rule:#2a2520;
+    --gold:#c8a96e; --gold-dim:#7a6540;
+    --ash:#c4bbb0;  --ash-dim:#6e6358;
+    --reader-font-size:1.1rem;
+    --reading-backdrop-wide:url("WIDESCREEN%20TEXT%20BACKDROP.png?v=7");
+    --reading-backdrop-tall:url("TALL%20BACKGROUND.png?v=7");
+    --reading-backdrop:var(--reading-backdrop-wide);
+    --sidebar-w:260px;
+  }
+  @media(orientation:portrait){:root{--reading-backdrop:var(--reading-backdrop-tall);}}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--dark);color:var(--ash);font-family:'EB Garamond',Georgia,serif;overflow-x:hidden}
+
+  /* ── COVER ── */
+  #cover{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;background:var(--dark);cursor:pointer;position:relative}
+  #cover picture{display:block;width:min(100%,1120px);margin:0 auto}
+  #cover picture img{display:block;width:100%;height:auto;max-height:92vh;object-fit:contain;box-shadow:0 28px 90px rgba(0,0,0,.55)}
+  @media(orientation:portrait){#cover picture{width:min(92vw,560px)}#cover picture img{max-height:89vh}}
+  .cover-prompt{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);font-family:'Josefin Sans',sans-serif;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--ash-dim);animation:pulse 2.5s ease-in-out infinite;white-space:nowrap;transition:opacity 1.5s ease}
+  @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+  /* ── TITLE ── */
+  #title{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;background:var(--dark);text-align:center;gap:1rem}
+  .title-eyebrow{font-family:'Josefin Sans',sans-serif;font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;color:var(--ash-dim);margin-bottom:1.5rem}
+  .title-main{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,8vw,5.5rem);font-weight:300;line-height:1.05;color:var(--ash);letter-spacing:.04em}
+  .title-rule{width:3rem;height:1px;background:var(--gold-dim);margin:2rem auto}
+  .title-author{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:var(--ash-dim);letter-spacing:.08em}
+  .title-tagline{margin-top:3rem;font-family:'Josefin Sans',sans-serif;font-size:.58rem;letter-spacing:.35em;text-transform:uppercase;color:#3a3530}
+  .begin-note{margin-top:2.2rem;font-style:italic;font-size:.85rem;color:var(--ash-dim);max-width:380px;line-height:1.75;font-family:'EB Garamond',Georgia,serif}
+  .begin-btn{margin-top:1.6rem;background:none;border:1px solid var(--gold-dim);color:var(--gold);font-family:'Josefin Sans',sans-serif;font-size:.64rem;letter-spacing:.32em;text-transform:uppercase;padding:.9rem 2.3rem;border-radius:999px;cursor:pointer;transition:border-color .2s,background .2s}
+  .begin-btn:hover{background:rgba(200,169,110,.1);border-color:var(--gold)}
+
+  /* ── READER SHELL ── */
+  #reader-section{position:relative;width:100%;height:100dvh;overflow:hidden;background:#151412;display:none}
+  #reader-section.live{display:flex}
+
+  /* ── SIDEBAR (wide screens only) ── */
+  #sidebar{
+    width:var(--sidebar-w);flex-shrink:0;height:100dvh;
+    background:rgba(8,8,8,.92);border-right:1px solid var(--rule);
+    display:none;flex-direction:column;padding:2rem 1.4rem;gap:1.8rem;
+    overflow-y:auto;z-index:10;
+  }
+  @media(min-width:900px){#sidebar{display:flex}}
+  .sb-title{font-family:'Josefin Sans',sans-serif;font-size:.54rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:.6rem}
+  .sb-section{display:flex;flex-direction:column;gap:.5rem}
+  .sb-label{font-family:'Josefin Sans',sans-serif;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ash-dim)}
+  input[type=range]{width:100%;accent-color:var(--gold-dim);margin-top:.2rem}
+  .font-btns{display:flex;gap:.4rem;margin-top:.3rem}
+  .font-btn{background:none;border:1px solid var(--rule);color:var(--ash-dim);cursor:pointer;border-radius:999px;padding:.3rem .75rem;font-family:'EB Garamond',Georgia,serif;transition:border-color .2s,color .2s}
+  .font-btn:nth-child(1){font-size:.8rem}
+  .font-btn:nth-child(2){font-size:1rem}
+  .font-btn:nth-child(3){font-size:1.2rem}
+  .font-btn.active,.font-btn:hover{border-color:var(--gold-dim);color:var(--gold)}
+  .sb-scene{font-family:'Josefin Sans',sans-serif;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ash-dim);line-height:2}
+
+  /* ── PAGE STACK ── */
+  #page-stack{position:relative;flex:1;height:100dvh;overflow:hidden}
+  .page{
+    position:absolute;inset:0;overflow:hidden;
+    opacity:0;pointer-events:none;
+    transition:opacity .5s ease;
+    background-color:#151412;
+    background-image:linear-gradient(rgba(8,8,8,.46),rgba(8,8,8,.6)),var(--reading-backdrop);
+    background-size:cover;background-position:center top;
+    background-attachment:fixed;
+    display:flex;flex-direction:column;
+  }
+  @supports(-webkit-touch-callout:none){.page{background-attachment:scroll}}
+  .page.active{opacity:1;pointer-events:auto}
+
+  /* text viewport: fills between top padding and nav bar */
+  .page-text{
+    flex:1;overflow:hidden;
+    max-width:640px;width:100%;margin:0 auto;
+    padding:3rem 1.6rem 8rem;
+    display:flex;flex-direction:column;justify-content:flex-start;
+  }
+
+  /* rendered sub-pages inside each scene — JS shows only one at a time */
+  .subpage{display:none;flex-direction:column;gap:0}
+  .subpage.visible{display:flex}
+  .subpage p{
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:var(--reader-font-size);
+    line-height:1.9;
+    color:#e7ded1;
+    text-shadow:0 2px 5px rgba(0,0,0,.85);
+    text-align:justify;
+    hyphens:auto;
+    margin-bottom:1.4rem;
+  }
+  .subpage p:last-child{margin-bottom:0}
+  .subpage em{font-style:italic;color:#f1e8db}
+
+  /* blank-beat special page */
+  .page.blank-beat .page-text{justify-content:center;text-align:center}
+  .page.blank-beat .subpage p{
+    font-family:'EB Garamond',Georgia,serif;
+    font-style:normal;font-weight:400;
+    font-size:var(--reader-font-size);
+    line-height:1.9;text-align:center;
+    color:#e7ded1;
+    text-shadow:0 2px 5px rgba(0,0,0,.85);
+  }
+  .page.blank-beat .subpage p:last-child{
+    font-style:italic;
+  }
+
+  /* closing page */
+  .page.closing .page-text{justify-content:center;text-align:center;gap:1rem}
+  .closing-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(1.7rem,5vw,2.6rem);color:var(--ash)}
+  .closing-sub{font-family:'Josefin Sans',sans-serif;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ash-dim)}
+  .closing-btn{margin-top:1rem;background:none;border:1px solid var(--gold-dim);color:var(--gold);font-family:'Josefin Sans',sans-serif;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;padding:.75rem 1.7rem;border-radius:999px;cursor:pointer}
+  .closing-btn:hover{background:rgba(200,169,110,.1)}
+
+  /* ── NAV BAR — fixed to bottom of reader section, always visible ── */
+  .reader-nav{
+    position:absolute;bottom:0;left:var(--sidebar-w);right:0;
+    display:flex;align-items:center;gap:.8rem;
+    padding:.9rem 1.3rem calc(.9rem + env(safe-area-inset-bottom,0));
+    background:linear-gradient(0deg,rgba(8,8,8,.96) 30%,rgba(8,8,8,.5) 80%,transparent);
+    z-index:20;
+  }
+  @media(max-width:899px){.reader-nav{left:0}}
+  .nav-btn{background:none;border:1px solid var(--rule);color:var(--ash-dim);font-family:'Josefin Sans',sans-serif;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;padding:.55rem 1.05rem;border-radius:999px;cursor:pointer;transition:border-color .2s,color .2s;flex-shrink:0;white-space:nowrap}
+  .nav-btn:hover{border-color:var(--gold-dim);color:var(--gold)}
+  .nav-btn:disabled{opacity:.22;cursor:default}
+
+  .nav-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:.35rem}
+  .nav-label{font-family:'Josefin Sans',sans-serif;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ash-dim)}
+  .nav-track{width:100%;max-width:200px;height:2px;background:var(--rule);border-radius:2px;overflow:hidden}
+  .nav-fill{height:100%;background:var(--gold-dim);transition:width .4s ease}
+
+  /* mobile-only controls (hidden on wide screens where sidebar shows them) */
+  .mobile-controls{display:flex;flex-direction:column;gap:.3rem;width:100%;max-width:200px}
+  @media(min-width:900px){.mobile-controls{display:none}}
+  .mobile-font-btns{display:flex;gap:.3rem;justify-content:center}
+  .mobile-font-btn{background:none;border:1px solid var(--rule);color:var(--ash-dim);cursor:pointer;border-radius:999px;padding:.2rem .55rem;font-family:'EB Garamond',Georgia,serif;transition:border-color .2s,color .2s}
+  .mobile-font-btn:nth-child(1){font-size:.72rem}
+  .mobile-font-btn:nth-child(2){font-size:.88rem}
+  .mobile-font-btn:nth-child(3){font-size:1rem}
+  .mobile-font-btn.active,.mobile-font-btn:hover{border-color:var(--gold-dim);color:var(--gold)}
+  .mobile-vol{display:flex;align-items:center;gap:.4rem}
+  .mobile-vol-label{font-family:'Josefin Sans',sans-serif;font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ash-dim);white-space:nowrap;min-width:3.5rem;text-align:right}
+
+  /* swipe hint */
+  .swipe-hint{position:absolute;top:1rem;right:1.2rem;font-family:'Josefin Sans',sans-serif;font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(196,187,176,.35);pointer-events:none;z-index:5}
+
+  /* ── BONUS TRACKS ── */
+  #bonus-tracks{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;background:var(--dark2)}
+  .bonus-inner{width:100%;max-width:480px}
+  .st-header{font-family:'Josefin Sans',sans-serif;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:.5rem;text-align:center}
+  .st-instruction{font-family:'EB Garamond',Georgia,serif;font-style:italic;font-size:.9rem;color:var(--ash-dim);text-align:center;margin:0 auto 2.4rem;line-height:1.75;max-width:400px}
+  .st-track{display:flex;align-items:center;gap:1.2rem;padding:1.1rem 0;border-bottom:1px solid var(--rule)}
+  .st-track:last-child{border-bottom:none}
+  .st-info{flex:1}
+  .st-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--ash);line-height:1.2}
+  .st-btn{background:none;border:1px solid var(--rule);color:var(--ash-dim);font-family:'Josefin Sans',sans-serif;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;padding:.5rem 1rem;cursor:pointer;transition:border-color .2s,color .2s;white-space:nowrap}
+  .st-btn:hover,.st-btn.playing{border-color:var(--gold);color:var(--gold)}
+
+  #now-playing{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,8,.95);border-top:1px solid var(--rule);padding:.6rem 1.5rem;display:none;align-items:center;gap:1rem;z-index:200;backdrop-filter:blur(8px)}
+  #now-playing.visible{display:flex}
+  .np-title{font-family:'Josefin Sans',sans-serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dim);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .np-stop{background:none;border:none;color:var(--ash-dim);cursor:pointer;font-size:.7rem;font-family:'Josefin Sans',sans-serif;padding:.2rem .5rem}
+  .np-stop:hover{color:var(--ash)}
+
+  /* ── COPYRIGHT ── */
+  #copyright{background:var(--dark);border-top:1px solid var(--rule);padding:3rem 2rem;display:flex;justify-content:center}
+  .copyright-inner{max-width:500px;text-align:center;font-family:'EB Garamond',Georgia,serif;font-size:.82rem;color:#3a3530;line-height:2}
+</style>
+</head>
+<body>
+
+<!-- ── AUDIO ── -->
+<audio id="audio-intro" src="music%20intro.mp3" preload="auto" playsinline></audio>
+<audio id="loopA" preload="none" playsinline></audio>
+<audio id="loopB" preload="none" playsinline></audio>
+<audio id="overlayPlayer" preload="none" playsinline></audio>
+<audio id="audio-ellison"  src="ELLISON.mp3?v=7"       preload="none" playsinline></audio>
+<audio id="audio-drivers"  src="Drivers%20Cut.mp3?v=7" preload="none" playsinline></audio>
+<audio id="audio-credits"  src="end%20credits.mp3?v=7" preload="none" playsinline></audio>
+
+<div id="now-playing">
+  <span class="np-title" id="np-title">Now Playing</span>
+  <button class="np-stop" onclick="stopBonus()">&#9632; Stop</button>
+</div>
+
+<!-- ── COVER ── -->
+<section id="cover" onclick="coverTap()">
+  <picture>
+    <source media="(orientation:portrait)"  srcset="taLL%20COVER%20ART.png?v=7">
+    <source media="(min-aspect-ratio:4/3)"  srcset="WIDESCREEN%20COVER%20ART.png?v=7">
+    <img src="SQUARE%20COVER%20ART.png?v=7" alt="The Invisible Girl cover art">
+  </picture>
+  <p class="cover-prompt">tap to play</p>
+</section>
+
+<!-- ── TITLE ── -->
+<section id="title">
+  <h1 class="title-main">The<br/>Invisible<br/>Girl</h1>
+  <div class="title-rule"></div>
+  <p class="title-author">Paul J. Linenfelser</p>
+  <p class="title-tagline">Watch. Listen. Disappear.</p>
+  <p class="begin-note">This story is scored to the page — music begins the moment you tap below, and follows you as you read. Best experienced with sound on, headphones if you have them.</p>
+  <button class="begin-btn" onclick="beginReading()">Begin Reading</button>
+</section>
+
+<!-- ── READER ── -->
+<section id="reader-section">
+
+  <!-- SIDEBAR (wide screens) -->
+  <aside id="sidebar">
+    <div>
+      <p class="sb-title">The Invisible Girl</p>
+      <p class="sb-label" id="sb-scene-name" style="margin-top:.3rem;color:var(--ash-dim)">—</p>
+    </div>
+    <div class="sb-section">
+      <p class="sb-label">Ambience</p>
+      <input type="range" id="sb-loop-vol"    min="0" max="1" step="0.05" value="0.7"  oninput="setLoopVol(this.value)">
+      <p class="sb-label" style="margin-top:.6rem">Score</p>
+      <input type="range" id="sb-overlay-vol" min="0" max="1" step="0.05" value="0.85" oninput="setOverlayVol(this.value)">
+    </div>
+    <div class="sb-section">
+      <p class="sb-label">Text Size</p>
+      <div class="font-btns">
+        <button class="font-btn"        onclick="setFontSize('0.95rem',this,'sb')">A</button>
+        <button class="font-btn active" onclick="setFontSize('1.1rem', this,'sb')">A</button>
+        <button class="font-btn"        onclick="setFontSize('1.3rem', this,'sb')">A</button>
+      </div>
+    </div>
+    <div class="sb-section" id="sb-progress-wrap">
+      <p class="sb-label">Progress</p>
+      <p class="sb-scene" id="sb-progress-text">—</p>
+    </div>
+  </aside>
+
+  <!-- PAGE STACK -->
+  <div id="page-stack">
+    <p class="swipe-hint">swipe or tap next ›</p>
+
+    <!-- ═══ SCENE DATA
+         Each .page has data-scene (label), data-loop, optional data-overlay / data-overlay-loop.
+         Text is split into .subpage divs by JS at runtime to fit the viewport.
+         For blank-beat and closing pages, subpage splitting is skipped.
+    ═══ -->
+
+    <!-- Scene 1: Arrival -->
+    <div class="page" id="scene-1"
+         data-scene="Arrival"
+         data-loop="odonata-walla.mp3">
+      <div class="page-text" id="scene-1-text">
+        <p>They haven't seen me all night. She thought to herself and smiled.</p>
+        <p>It had been three hours, six security sweeps and still no one had seen her. She wasn't surprised really. No one ever saw her. It was time again, the next sweep should be underway.</p>
+        <p>As she looked up she counted two of the six security detail in this room. She had no issue with these two. The security chief on the other hand was really her only concern. She knew he would know the faces of every invited guest.</p>
+        <p>The ones worth their salt always did.</p>
+        <p>The small reception had somewhere between one hundred and one hundred and twenty guests. This was no surprise for Kalorama Rd NW. The neighborhood was one of the most secretive and elite in D.C. Just north of Dupont Circle, serious money and high politicians.</p>
+        <p>Standing amongst similar homes it didn't stand out at all. Yet it still felt like something both timeless and evocative of power and establishment. Not in a way that screamed ridiculous extravagance, rather more of wealth, legacy, and historical permanence. The four story brick and limestone home sat slightly back off of the road. It rose out of the ground on a large rough cut stone foundation, giving it the look of something that grew out of the very earth it stood on. Its dark brick facade rose in formal tiers. The lower levels had tall cathedral like windows with mullions and diamond shaped panes. Above these was a limestone course with carved garlands before the next rise of brick. This pattern continued until the third floor which had a setback center facade allowing for a front facing balcony with carved limestone balustrades.</p>
+        <p>This was by far not the first time she had been an uninvited guest in one of Kalorama's Beaux-Arts mansions. She felt the exteriors always paled compared to the elegance of the finer polished interiors. She appreciated the time she could just enjoy viewing the marble floors and sweeping staircases.</p>
+        <p>As she stood off to the side of the large drawing room sipping a drink while people mingled all about, the security chief came into the room. She didn't even check her watch, he was right on schedule. He held a small device just larger than a phone. He was scanning for comm signals, listening devices, things that didn't belong. Watching his gaze she followed how he looked at people. He often made eye contact, but she saw he had patterns. For some he checked his device while stepping near an individual. They were usually the ones that she had also been watching. There were a couple of low level operators at the party. Private security no doubt for someone here.</p>
+        <p>The security chief was getting closer. She didn't show concern. She had walked through entrance security without issue. She had nothing out of the ordinary, no recording or transmitting devices. Unlike the security team she didn't even have a comm device, just a small handbag with her ID, some personal items and her phone. As he stepped within a few feet of her she watched his eyes. He had a pattern of making eye contact with every third person as he walked by. He looked at a newer lobbyist and smiled. One, two, smiling at a Senator's wife. There were two people between them. As he scanned the cluster she was near he stepped forward. One... Two... She looked up and smiled briefly as he entered her space. Although he picked his head up and looked in her direction he never made eye contact. He just kept moving.</p>
+        <p>Of course this was nothing new. She had made a life out of being places she shouldn't, and he had done the same twice already this evening.</p>
+      </div>
+    </div>
+
+    <!-- Scene 2: Flashback — The Invisible Man -->
+    <div class="page" id="scene-2"
+         data-scene="The Invisible Man"
+         data-loop="odonata-alone.mp3"
+         data-overlay="frost-memory-loop.mp3"
+         data-overlay-loop="true">
+      <div class="page-text" id="scene-2-text">
+        <p>As a freshman in high school she had just read <em>The Invisible Man</em>, published in 1952 by Random House. Something about it struck a nerve with her. On an impulse she excused herself from class and never went back. Instead she walked right into the teacher's lounge. Going up to the vending machine she bought a Dr. Pepper and then made her way to one of the couches where she proceeded to sit and read a magazine for the next twenty five minutes. It was not what she expected at all. At least three teachers had come in and out. Fifteen minutes in the bell rang. A few minutes later the teacher whose very class she had left came in, looked in her direction and smiled as if she had recognized her. In reality though, the teacher hadn't even registered who she was. It was then that she had come to realize what she had probably known all along. Like the author experienced, people chose not to see her.</p>
+      </div>
+    </div>
+
+    <!-- Scene 3: The House, The Watch -->
+    <div class="page" id="scene-3"
+         data-scene="The House"
+         data-loop="odonata-walla.mp3">
+      <div class="page-text" id="scene-3-text">
+        <p>Her eyes calmly looked over the room once again after the security chief left. What had by itself been a classic parlor was now opened up to include the drawing room with the grand entrance and stairway between them.</p>
+        <p>Although she was looking at the people and paying close attention to the security contingent at the party, her eyes were always drawn toward the unique architectural features she found. The openings where the parlor, entryway, and drawing room were divided were no exception. The large wooden doors alone were a marvel. Almost one hundred and twenty years old, they were heavy ten foot tall and four foot wide oak panels. Each side of the opening had three of these panels that glided effortlessly on a massive track hidden in the bulkhead above. When closed the doors made up three quarters of the walls themselves. Now there was almost nothing there. Yet despite the large space, these stub walls along with other architectural features such as coffered wood ceilings made the spaces still feel more intimate than you would expect.</p>
+        <p>As she looked around again something felt different, yet she couldn't place it. She checked her watch. It fit in perfectly with her surroundings. It had a vintage look, but not something that screamed antique or old. Rather it was more elegant and timeless. A gift from her uncle, she never went on an op without it. It gave her a sense of belonging that she had lost from most everywhere else. It was time.</p>
+      </div>
+    </div>
+
+    <!-- Scene 4: The Operation -->
+    <div class="page" id="scene-4"
+         data-scene="The Operation"
+         data-loop="odonata-walla.mp3">
+      <div class="page-text" id="scene-4-text">
+        <p>Casually she made her way to the bar. It was set up in the far corner of the drawing room. The bartender was familiar. She had seen him working similar parties over the last year in the area. Smiling, she set her small clutch down on the bar and waited. Bartenders were always her litmus test. They made a living remembering faces and people's drink preferences.</p>
+        <p>The bartender stepped forward, looked at her and paused. Here it is, she thought. Then he smiled politely and handed her an elegant printed drink menu.</p>
+        <p>"Would you care for a drink this evening, Miss?"</p>
+        <p>Her smile back was genuine, but slightly restrained. It took all she could do not to laugh as this would be the third drink he poured her tonight. She was reminded of a portrait sitting that her family had when she was eleven. There were only four siblings. She was the middle of three girls and they all had an older brother. Being the middle girl she didn't get the cute attention that the baby got, and her older sister tended to draw all of the attention in the room. It was probably this family portrait that really drew her attention to the idea that she wasn't always seen. The photographer was adjusting everyone's pose. After going through and moving everyone a couple of times and checking the shot he looked back at them.</p>
+        <p>"Oh, sorry, I seem to have forgotten one."</p>
+        <p>Then he stepped forward and changed her pose. It was the third time he had adjusted her. Her taller sister snickered behind her. "He forgot you."</p>
+        <p>"Shhhh!" their mother scolded her sister.</p>
+        <p>She looked up from the drink menu and glanced across the room. The man who was the reason she was here was approaching. Right on schedule. He had been to the bar three times tonight like clockwork. A few minutes prior he had checked something on his phone. Each trip to the bar had been approximately thirty minutes apart, preceded by a check of his phone. Whatever he was waiting for didn't concern her. She was here for one reason, and she only needed a few minutes to make it happen.</p>
+        <p>As he stepped to the bar she spoke up answering the bartender.</p>
+        <p>"I'll try the Attach&eacute; please, actually can you make that two?" She knew that the drink was the most complex build on the short menu. Ordering two would take some time, just enough for what she needed.</p>
+        <p>"Yes ma'am. No problem." Then looking at the man standing next to her, "I'll be just a few minutes, Sir."</p>
+        <p>The mark looked up from his phone in frustration. He clearly wasn't pleased at whatever he had been looking at. He shut down the phone and set it on the bar near her clutch.</p>
+        <p>"Do you need this?" she asked as she offered the placard to him.</p>
+        <p>"Thank you," he said as he took it from her and glanced over it aimlessly. His voice showed a reflexive pleasantry, yet his eyes clearly indicated that he hadn't really registered her presence.</p>
+        <p>Her task was almost complete. Just a few more moments. As long as the bartender kept him there for just a little while longer.</p>
+        <p>She had been watching him for almost the entirety of the time she had been here. Not constantly of course, but enough to clock his general movements and patterns. Enough to know that he was anxious for something due to happen tonight. Most likely a clandestine meeting here at the reception. His anxiety had been driving him back to the bar like clockwork, and the last three times he had his phone out and set it down while ordering.</p>
+        <p>He must be using the drinks as either a distraction while he waited for his appointed time, or for a bit of courage. It was almost 9:15 and she had been right. He had needed one more drink.</p>
+        <p>Her dossier on him was simple and short. A mid level State Department attach&eacute;, it was no surprise to see him here. Thomas Mercer did not have a Top Secret or SCI clearance level. However he did have a Secret clearance which gave him access to diplomatic cable summaries, senior officials meeting schedules, visitor logs and other information before it was released publicly.</p>
+        <p>For whatever reason he had, typically either debt or ego, Mr. Mercer had been flagged for suspicious activity. He had recently adjusted his own personal schedule to ensure he would not miss this reception. His own personal schedule had a notation of "9:30" on the entry. These and other reasons had become cause for her being here tonight.</p>
+        <p>The only pertinent instructions were to complete her task before 9:30. Typical. Her assignments usually involved some form of surveillance where usual methods were ineffective. Something that required being both close and unseen.</p>
+        <p>As she waited for the bartender, inside her clutch her phone was busy. Her Google Pixel phone would pass any cursory scan by security and looked the part. However with custom architecture and modified signal strength it became something else entirely.</p>
+        <p>Within moments after he had set it down, with just the slightest detection of a signal whisper from his phone, a zero-click ghost protocol infiltration started.</p>
+        <p>The software was not something you'd find off the shelf in some secret spy warehouse. This was next level code custom built on a similar foundation to the Israeli Pegasus. Known to exist by only a very small list of people, the Wraith Platform was both quick and completely stealthy. As soon as the proximity sensor detected his iPhone a dark handshake occurred. Nothing visible happened. His screen didn't light up, no notification chime or light blink, just a zero touch full sweep of the phone's files and software. This was followed by an extraction of everything for later review along with completely removing not only what the software's AI deemed critical, top secret, classified or simply out of place. This was also accompanied by other random files and code being deleted or corrupted. In the end even a thorough examination of the phone would only show random software corruption.</p>
+      </div>
+    </div>
+
+    <!-- Scene 5: Eyes Meet -->
+    <div class="page" id="scene-5"
+         data-scene="Eyes Meet"
+         data-loop="odonata-walla.mp3">
+      <div class="page-text" id="scene-5-text">
+        <p>While waiting for both her drinks and the Wraith to complete its task she scanned the room again. Something was definitely off. The feeling she had before, it was as if someone was watching her. She was certain she felt eyes on her. She scanned the room again, a second pass, deliberate, unhurried.</p>
+        <p>It took her by surprise. The little girl sitting at the top of the main staircase was staring right at her. Her eyes moved from the bartender back to the girl. Still at the top of the steps, but looking out at the room now rather than at her.</p>
+        <p>Had she imagined it? No one ever gave her a second look at these things, let alone made eye contact. It was unsettling for her.</p>
+      </div>
+    </div>
+
+    <!-- Scene 6: Mission Complete -->
+    <div class="page" id="scene-6"
+         data-scene="Mission Complete"
+         data-loop="odonata-walla.mp3">
+      <div class="page-text" id="scene-6-text">
+        <p>Hearing a glass set down she looked back at the bartender who had just set down the first of her Attach&eacute; drinks.</p>
+        <p>"Just a minute on the next one, Miss."</p>
+        <p>Mercer was getting antsy. It was 9:20. He needed one more drink to gather the courage for what he was about to do.</p>
+        <p>"That doesn't look half bad," he said as he turned the small drink menu card around aimlessly and finally placed it on the bar.</p>
+        <p>She smiled at him with a restrained politeness while picking up her drink and taking a sip. As she took another drink her phone vibrated in her clutch. Checking it she saw that her notification light was blinking. The pattern told her Wraith had finished its task. She left it where it was and returned her attention to her drink.</p>
+        <p>"When you're done I'll take one of those as well," he addressed the bartender.</p>
+        <p>"Yes Sir, absolutely."</p>
+        <p>Just a few seconds later he set down her second drink. Before he could turn back to making another for Thomas Mercer, she stopped him with a hand on his forearm.</p>
+        <p>"Wait." Then sliding the new drink on the bar towards Mercer, she smiled.</p>
+        <p>"Please take this one, my apologies for making you wait." Then after she took another sip she continued, "This isn't quite what I thought it would be."</p>
+        <p>"Thank you," Mercer replied. Then picking up his phone he nervously checked the time again. He put his phone in his inner jacket pocket, picked up his drink and quickly walked off as if he had not even interacted with her.</p>
+        <p>As she stepped away from the bar she could see that the bartender had already turned to someone else. Now she had a few moments to relax. Her mission accomplished, her only task was to move around a bit before gracefully leaving without notice. The last thing she wanted was to rush off after an interaction with her mark. No reason to give anyone reviewing security video later a reason to look twice at her.</p>
+        <p>The uneasiness returned. She scanned the room and found the girl again, still watching. This time she had come off of the main staircase and was standing in a corner near the hallway opening to the back of the home.</p>
+        <p>Her focus on Mercer, who now stood with a small group near the bottom of the stairs, no longer required her undivided attention. While she still was clocking his movements she could mingle a little, so she made her way towards the corner.</p>
+      </div>
+    </div>
+
+    <!-- Scene 7: Ice Cream -->
+    <div class="page" id="scene-7"
+         data-scene="Ice Cream"
+         data-loop="odonata-walla.mp3"
+         data-overlay="frost-pt1.mp3">
+      <div class="page-text" id="scene-7-text">
+        <p>"Are you waiting for the ice cream?" the girl asked her quietly. Having someone engage her in conversation was an unusually refreshing prospect.</p>
+        <p>"Ice cream?" she inquired. "I didn't know there would be ice cream."</p>
+        <p>"Momma said if I stayed in my room and out of trouble tonight I could have ice cream before bed. It's almost bedtime. Do you think there's enough for everyone?" she asked.</p>
+        <p>"I don't think everyone is getting ice cream. Just the special ones, like you."</p>
+        <p>"That's what Momma says!" The girl beamed. "I think you must be special too."</p>
+        <p>"You do?" A pause. "Why do you say that?"</p>
+        <p>"You saw me. I thought I was being sneaky but you saw me," the little girl answered. "Most people don't."</p>
+      </div>
+    </div>
+
+    <!-- Scene 8: The File / Hargrove -->
+    <div class="page" id="scene-8"
+         data-scene="The File"
+         data-overlay="frost-rise.mp3">
+      <div class="page-text" id="scene-8-text">
+        <p>The girl's comment caught her off guard. It was an odd thing, being reminded of yourself by a child. Her mind took her back to three months into her training for her covert work. She had found her way into the trainer's office. It was simply curiosity. She had asked more than once. The answer never changed. Adequate. As if that settled anything.</p>
+        <p>In front of her she had her own personnel file. As she read through it she saw a few mistakes in the data. It had made her laugh and only reinforced her realization that people just didn't see her. Even when they had her information in front of them, they still missed. The psychological evaluation however made her absolutely infuriated. A notation concerning her own youthful motivation couldn't have been further from what she felt.</p>
+        <p>It read: "Subject displays a marked tendency toward social withdrawal and non-engagement in group settings. Presence in shared spaces is consistently minimal, with subject rarely initiating contact or drawing attention to herself. This pattern suggests an underdeveloped sense of personal presence rather than any notable operational aptitude. Recommend administrative track; field potential unlikely."</p>
+        <p>She had slipped past three secure checkpoints just to read this file. She could not just let this go without addressing it. After giving it some thought her only recourse was to simply leave a handwritten note in the report's margin. She felt a sense of pride in writing it. It was in fact a quote from the same book, <em>The Invisible Man</em>, that had inspired her in school. She wrote her favorite line. "I myself, after existing some twenty years, did not become alive until I discovered my invisibility."</p>
+        <p>To her trainer's credit, she never mentioned the intrusion. Three months later she was called to her office. Amanda Hargrove had been the one to recruit her and had overseen her six months of training. Now she was finally done.</p>
+        <p>"What's your name?" The question surprised her. "My name? You know my name."</p>
+        <p>"What's your name?" The question came again.</p>
+        <p>She sighed. "My name is..."</p>
+        <p>"Not anymore." Hargrove interrupted her. "Here is your new identity. Learn it, become it. Everything you'll need is in this." She slid over a file. It had a simple title on the cover. <em>Ellison.</em></p>
+        <p>She recognized it immediately. Ralph Ellison. Of course.</p>
+        <p>"You didn't think that I knew the quote did you? You underestimated me."</p>
+        <p>"What's your name?" the question came once more. Her focus still on the name Ellison. She started to answer. "My name is El..."</p>
+      </div>
+    </div>
+
+    <!-- Scene 9: THE BLANK BEAT -->
+    <div class="page blank-beat" id="scene-9"
+         data-scene="—"
+         data-silent="true"
+         data-beat-delay="800">
+      <div class="page-text" id="scene-9-text">
+        <p>Abruptly she realized that for just a moment she had completely lost focus. The little girl tugging at her hand snapped her back. She looked down at her.</p>
+        <p>"What's your name?" The girl asked again, still waiting.</p>
+        <p>"My name?" She paused. "What's your name?"</p>
+        <p>The girl lit up, the attention landing on her like something she didn't get enough of. "I'm Claire," she said.</p>
+        <p>"What a pretty name, Claire. My name is..." Her voice trailed off. It had been a long time.</p>
+        <p>"My name is Aspyn."</p>
+      </div>
+    </div>
+
+    <!-- Scene 10: Claire, Goodbye -->
+    <div class="page" id="scene-10"
+         data-scene="Goodbye Claire"
+         data-overlay="frost-pt3.mp3">
+      <div class="page-text" id="scene-10-text">
+        <p>Aspyn hadn't shared her actual name with anyone in over six years. Yet Claire reminded her so much of herself at that age she just couldn't help herself, and Claire had actually seen her.</p>
+        <p>"Claire, come here. You shouldn't be bothering your father's guests." A voice came from the hallway opening that led to the back of the home and the kitchen. "I have your ice cream waiting." A young nanny came forward out of the hall and took Claire's hand.</p>
+        <p>"It's ice cream time!" Claire excitedly replied. Then looking back with a voice full of innocence, "Goodbye Aspyn."</p>
+        <p>"Goodbye Claire, have a nice night."</p>
+      </div>
+    </div>
+
+    <!-- Scene 11: Departure -->
+    <div class="page" id="scene-11"
+         data-scene="Middleburg"
+         data-overlay="escaping-reality.mp3">
+      <div class="page-text" id="scene-11-text">
+        <p>Two minutes later she followed the bluestone walk down to the sidewalk. The entire encounter with Claire had stirred something within her. The street was quiet, then again Kalorama streets were always quiet. Heavy trees and old money helped. Parked around the corner sat her 1972 Datsun 240Z. The olive color was almost black in the night. At initial glance to an unfamiliar eye it may have appeared to be a vintage 911 or 912 Porsche.</p>
+        <p>Her 240Z had a complete restoration by a custom coachbuilder. The body was painted a shimmering olive green. She opened the door and settled into the beautifully broken in red leather. Leaning back she unlatched the removable roof panels. A few moments later the panels were stored behind the seats and she was moving quietly through the night. The vintage Datsun ran quiet while she crossed the Potomac and made her way through McLean and Tysons. As she hit Route 50 she started to let out the horses. Labeled a 240Z, the coachbuilder called it a 580Z due to the fact that he had shoehorned a Chevrolet 5.8 liter V8 under the hood.</p>
+        <p>Finally leaving the lights of the city behind her she reached down and pulled a lever. It opened a switch gate between the standard exhaust and a set of glasspacks. She unleashed the V8 and it roared as the car leaped forward into the night.</p>
+        <p>With the cool October wind in her hair and the loud roar of the V8 in her ears, Aspyn thought of the night's operation. Her mind returning again and again to the little girl Claire, who at this very moment was probably being tucked into bed. Claire had met a woman named Aspyn at her father's party, and she had gotten her ice cream.</p>
+        <p>It was more of a trace than she had left in years.</p>
+        <p>Someone had seen her, she thought. No one had in a long time.</p>
+        <p>Aspyn felt different somehow. Middleburg. She pointed the car west and opened it up.</p>
+        <p>Perhaps it was time for a change.</p>
+      </div>
+    </div>
+
+    <!-- Scene 12: Closing -->
+    <div class="page closing" id="scene-12"
+         data-scene="The End"
+         data-overlay="sense-of-space.mp3">
+      <div class="page-text">
+        <p class="closing-title"><em>The Invisible Girl</em></p>
+        <p class="closing-sub">End of Story</p>
+        <button class="closing-btn" onclick="finishReading()">Continue to Bonus Tracks</button>
+      </div>
+    </div>
+
+  </div><!-- #page-stack -->
+
+  <!-- GLOBAL NAV BAR — lives outside all scene pages so it's always present -->
+  <nav class="reader-nav" id="global-nav">
+    <button class="nav-btn" id="prevBtn" onclick="prev()">&#8592; Back</button>
+    <div class="nav-center">
+      <span class="nav-label" id="nav-label">—</span>
+      <div class="nav-track"><div class="nav-fill" id="nav-fill" style="width:0%"></div></div>
+      <div class="mobile-controls">
+        <div class="mobile-font-btns">
+          <button class="mobile-font-btn"        onclick="setFontSize('0.95rem',this,'mob')">A</button>
+          <button class="mobile-font-btn active" onclick="setFontSize('1.1rem', this,'mob')">A</button>
+          <button class="mobile-font-btn"        onclick="setFontSize('1.3rem', this,'mob')">A</button>
+        </div>
+        <div class="mobile-vol">
+          <span class="mobile-vol-label">Ambience</span>
+          <input type="range" id="mob-loop-vol" min="0" max="1" step="0.05" value="0.7" oninput="setLoopVol(this.value)" style="flex:1;accent-color:var(--gold-dim)">
+        </div>
+        <div class="mobile-vol">
+          <span class="mobile-vol-label">Score</span>
+          <input type="range" id="mob-overlay-vol" min="0" max="1" step="0.05" value="0.85" oninput="setOverlayVol(this.value)" style="flex:1;accent-color:var(--gold-dim)">
+        </div>
+      </div>
+    </div>
+    <button class="nav-btn" id="nextBtn" onclick="next()">Next &#8594;</button>
+  </nav>
+</section><!-- #reader-section -->
+
+<!-- ── BONUS TRACKS ── -->
+<section id="bonus-tracks">
+  <div class="bonus-inner">
+    <p class="st-header">Bonus Tracks</p>
+    <p class="st-instruction">The score above played automatically as you read. These three theme songs with lyrics are kept here so they never interrupt the story.</p>
+    <div class="st-track">
+      <div class="st-info"><p class="st-title">Ellison</p></div>
+      <button class="st-btn" id="btn-ellison" onclick="toggleBonus('ellison','Ellison')">&#9654; Play</button>
+    </div>
+    <div class="st-track">
+      <div class="st-info"><p class="st-title">Drivers Cut</p></div>
+      <button class="st-btn" id="btn-drivers" onclick="toggleBonus('drivers','Drivers Cut')">&#9654; Play</button>
+    </div>
+    <div class="st-track">
+      <div class="st-info"><p class="st-title">End Credits</p></div>
+      <button class="st-btn" id="btn-credits" onclick="toggleBonus('credits','End Credits')">&#9654; Play</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── COPYRIGHT ── -->
+<section id="copyright">
+  <div class="copyright-inner">
+    <p><em>The Invisible Girl</em></p>
+    <p>Copyright &copy; Paul J. Linenfelser. All rights reserved.</p>
+    <p>This is a work of fiction. Names, characters, places, and incidents are the product of the author's imagination.</p>
+    <p style="margin-top:1.5rem">Original soundtrack composed and produced using Suno AI and Epidemic Sound.<br/>Score concept and direction by Paul J. Linenfelser.</p>
+  </div>
+</section>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   SCENE DEFINITIONS
+   (mirrors the HTML data-* attributes — the JS reads
+   these at startup so everything is in one place)
+═══════════════════════════════════════════════════ */
+const SCENES = [
+  { id:'scene-1',  label:'Arrival',          loop:'odonata-walla.mp3' },
+  { id:'scene-2',  label:'The Invisible Man',loop:'odonata-alone.mp3', overlay:'frost-memory-loop.mp3', overlayLoop:true },
+  { id:'scene-3',  label:'The House',        loop:'odonata-walla.mp3' },
+  { id:'scene-4',  label:'The Operation',    loop:'odonata-walla.mp3' },
+  { id:'scene-5',  label:'Eyes Meet',        loop:'odonata-walla.mp3' },
+  { id:'scene-6',  label:'Mission Complete', loop:'odonata-walla.mp3' },
+  { id:'scene-7',  label:'Ice Cream',        loop:'odonata-walla.mp3', overlay:'frost-pt1.mp3' },
+  { id:'scene-8',  label:'The File',         overlay:'frost-rise.mp3', beatDelay:0 },
+  { id:'scene-9',  label:'—',                silent:true, beatDelay:800 },
+  { id:'scene-10', label:'Goodbye Claire',   overlay:'frost-pt3.mp3' },
+  { id:'scene-11', label:'Middleburg',       overlay:'escaping-reality.mp3' },
+  { id:'scene-12', label:'The End',          overlay:'sense-of-space.mp3', closing:true },
+];
+
+/* ═══════════════════════════════════════════════════
+   PAGINATION ENGINE
+   Splits each scene's <p> tags into viewport-sized
+   subpages at runtime. Reruns on font-size change
+   or window resize.
+═══════════════════════════════════════════════════ */
+
+function getAvailableH(){
+  const stack = document.getElementById('page-stack');
+  const nav   = document.getElementById('global-nav');
+  const navH  = nav ? nav.offsetHeight : 140;
+  const topPad = 48; // matches padding-top on .page-text
+  const buffer = 24; // safety margin so last line never clips
+  return stack.clientHeight - navH - topPad - buffer;
+}
+
+function paginateScene(sceneIdx){
+  const sc = SCENES[sceneIdx];
+  const textEl = document.getElementById(sc.id + '-text');
+  if(!textEl) return; // closing page has no text el to paginate
+
+  // clear previous subpages
+  textEl.querySelectorAll('.subpage').forEach(el => el.remove());
+
+  const allPs = Array.from(textEl.querySelectorAll('p'));
+  if(allPs.length === 0) return;
+
+  // blank-beat and closing: single subpage, no measurement needed
+  const pageEl = document.getElementById(sc.id);
+  if(pageEl.classList.contains('blank-beat') || pageEl.classList.contains('closing')){
+    const sp = document.createElement('div');
+    sp.className = 'subpage';
+    allPs.forEach(p => { textEl.removeChild(p); sp.appendChild(p); });
+    textEl.appendChild(sp);
+    return;
+  }
+
+  const availH = getAvailableH();
+
+  // measurement probe: hidden clone to measure paragraph heights
+  const probe = document.createElement('div');
+  probe.style.cssText = `position:absolute;visibility:hidden;width:${textEl.clientWidth}px;font-family:'EB Garamond',Georgia,serif;font-size:var(--reader-font-size);line-height:1.9`;
+  document.body.appendChild(probe);
+
+  const subpages = [];
+  let current = [];
+  let currentH = 0;
+  const GAP = 22; // margin-bottom per paragraph in px
+
+  allPs.forEach(p => {
+    // clone into probe to measure
+    const clone = p.cloneNode(true);
+    probe.appendChild(clone);
+    const h = clone.offsetHeight + GAP;
+    probe.removeChild(clone);
+
+    if(current.length > 0 && currentH + h > availH){
+      subpages.push(current);
+      current = [p];
+      currentH = h;
+    } else {
+      current.push(p);
+      currentH += h;
+    }
+  });
+  if(current.length) subpages.push(current);
+  document.body.removeChild(probe);
+
+  // remove original <p> tags from DOM
+  allPs.forEach(p => textEl.removeChild(p));
+
+  // build .subpage divs
+  subpages.forEach(pList => {
+    const sp = document.createElement('div');
+    sp.className = 'subpage';
+    pList.forEach(p => sp.appendChild(p));
+    textEl.appendChild(sp);
+  });
+}
+
+function paginateAll(){
+  SCENES.forEach((_, i) => paginateScene(i));
+  // after repagination, reposition to current location
+  if(typeof currentSceneIdx !== 'undefined') renderPosition();
+}
+
+/* ═══════════════════════════════════════════════════
+   READER STATE
+═══════════════════════════════════════════════════ */
+let currentSceneIdx = 0;
+let currentSubIdx   = 0;
+
+function getSubpages(sceneIdx){
+  const sc = SCENES[sceneIdx];
+  const textEl = document.getElementById(sc.id + '-text');
+  if(!textEl) return [];
+  return Array.from(textEl.querySelectorAll('.subpage'));
+}
+
+function totalSubpages(sceneIdx){
+  return getSubpages(sceneIdx).length || 1;
+}
+
+// flat index for progress bar
+function flatIndex(){
+  let n = 0;
+  for(let i = 0; i < currentSceneIdx; i++) n += totalSubpages(i);
+  return n + currentSubIdx;
+}
+function flatTotal(){
+  let n = 0;
+  SCENES.forEach((_, i) => { n += totalSubpages(i); });
+  return n;
+}
+
+function renderPosition(){
+  // hide all pages, show current
+  SCENES.forEach(sc => {
+    const el = document.getElementById(sc.id);
+    if(el) el.classList.remove('active');
+  });
+  const sc = SCENES[currentSceneIdx];
+  const pageEl = document.getElementById(sc.id);
+  if(pageEl) pageEl.classList.add('active');
+
+  // show correct subpage
+  const subs = getSubpages(currentSceneIdx);
+  subs.forEach((sp, i) => {
+    sp.classList.toggle('visible', i === currentSubIdx);
+  });
+
+  // text fade-in
+  const textEl = document.getElementById(sc.id + '-text');
+  if(textEl){
+    textEl.style.opacity = '0';
+    const delay = (sc.beatDelay || 0) + 40;
+    setTimeout(() => { textEl.style.transition = 'opacity .8s ease'; textEl.style.opacity = '1'; }, delay);
+  }
+
+  updateNav();
+  updateAudio();
+}
+
+/* ═══════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════ */
+function next(){
+  const subs = getSubpages(currentSceneIdx);
+  const subCount = subs.length || 1;
+
+  if(currentSubIdx < subCount - 1){
+    // next subpage within same scene — no audio change
+    currentSubIdx++;
+    renderSubOnly();
+  } else if(currentSceneIdx < SCENES.length - 1){
+    // advance to next scene
+    currentSceneIdx++;
+    currentSubIdx = 0;
+    renderPosition();
+  }
+}
+
+function prev(){
+  if(currentSubIdx > 0){
+    currentSubIdx--;
+    renderSubOnly();
+  } else if(currentSceneIdx > 0){
+    currentSceneIdx--;
+    const subs = getSubpages(currentSceneIdx);
+    currentSubIdx = Math.max(0, (subs.length || 1) - 1);
+    renderPosition();
+  }
+}
+
+function renderSubOnly(){
+  // just swap the visible subpage, no audio change, no page transition
+  const subs = getSubpages(currentSceneIdx);
+  subs.forEach((sp, i) => sp.classList.toggle('visible', i === currentSubIdx));
+  const textEl = document.getElementById(SCENES[currentSceneIdx].id + '-text');
+  if(textEl){
+    textEl.style.transition = 'none';
+    textEl.style.opacity = '0';
+    setTimeout(() => { textEl.style.transition = 'opacity .6s ease'; textEl.style.opacity = '1'; }, 20);
+  }
+  updateNav();
+}
+
+function updateNav(){
+  const sc = SCENES[currentSceneIdx];
+  const subs = getSubpages(currentSceneIdx);
+  const subCount = subs.length || 1;
+
+  const isFirst = currentSceneIdx === 0 && currentSubIdx === 0;
+  const isLast  = sc.closing;
+
+  document.getElementById('prevBtn').disabled = isFirst;
+  document.getElementById('nextBtn').style.visibility = isLast ? 'hidden' : 'visible';
+  if(!isLast) document.getElementById('nextBtn').disabled = false;
+
+  const label = subCount > 1
+    ? `${sc.label} · ${currentSubIdx + 1} / ${subCount}`
+    : sc.label;
+  document.getElementById('nav-label').textContent = label;
+
+  const pct = flatTotal() > 0 ? (flatIndex() / (flatTotal() - 1)) * 100 : 0;
+  document.getElementById('nav-fill').style.width = pct + '%';
+
+  // sidebar
+  const sbScene = document.getElementById('sb-scene-name');
+  if(sbScene) sbScene.textContent = sc.label;
+  const sbProg = document.getElementById('sb-progress-text');
+  if(sbProg) sbProg.textContent = `${flatIndex() + 1} of ${flatTotal()} pages`;
+}
+
+/* ═══════════════════════════════════════════════════
+   AUDIO ENGINE
+═══════════════════════════════════════════════════ */
+let userLoopVol    = 0.7;
+let userOverlayVol = 0.85;
+const RAMP_MS      = 200;
+
+const loopA   = document.getElementById('loopA');
+const loopB   = document.getElementById('loopB');
+const overlay = document.getElementById('overlayPlayer');
+let activeLoop = loopA, standbyLoop = loopB;
+let currentLoopSrc = '';
+
+function crossfadeLoop(src, ms){
+  ms = ms || 1500;
+  if(!src){ if(currentLoopSrc){ fadeStop(activeLoop, ms); currentLoopSrc=''; } return; }
+  if(src === currentLoopSrc) return;
+  standbyLoop.src = src; standbyLoop.loop = true;
+  standbyLoop.currentTime = 0; standbyLoop.volume = 0;
+  standbyLoop.play().catch(()=>{});
+  const was = currentLoopSrc !== '';
+  const steps = 30, dt = ms/steps; let s = 0;
+  const t = setInterval(()=>{
+    s++;
+    standbyLoop.volume = Math.min(1, s/steps) * userLoopVol;
+    if(was) activeLoop.volume = Math.max(0, 1-s/steps) * userLoopVol;
+    if(s >= steps){
+      clearInterval(t);
+      if(was) activeLoop.pause();
+      [activeLoop, standbyLoop] = [standbyLoop, activeLoop];
+    }
+  }, dt);
+  currentLoopSrc = src;
+}
+
+function fadeStop(player, ms){
+  const steps=20, dt=ms/steps; let s=0; const v0=player.volume||userLoopVol;
+  const t=setInterval(()=>{ s++; player.volume=Math.max(0,v0*(1-s/steps)); if(s>=steps){clearInterval(t);player.pause();} },dt);
+}
+
+function playOverlay(src, loop){
+  overlay.pause();
+  overlay.src = src; overlay.loop = !!loop;
+  overlay.currentTime = 0; overlay.volume = 0;
+  overlay.load();
+  overlay.play().catch(()=>{});
+  const steps=20, dt=RAMP_MS/steps; let s=0;
+  const t=setInterval(()=>{ s++; overlay.volume=Math.min(userOverlayVol,(s/steps)*userOverlayVol); if(s>=steps)clearInterval(t); },dt);
+}
+
+function stopOverlay(ms){ ms=ms||300; if(overlay.paused)return; fadeStop(overlay,ms); }
+
+function hardStopAll(){
+  [loopA,loopB,overlay].forEach(p=>{p.pause();p.volume=0;});
+  currentLoopSrc='';
+}
+
+function updateAudio(){
+  const sc = SCENES[currentSceneIdx];
+  // audio only fires on scene change, not subpage change (handled in renderSubOnly)
+  if(sc.silent){
+    hardStopAll();
+    return;
+  }
+  crossfadeLoop(sc.loop || '');
+  if(sc.overlay) playOverlay(sc.overlay, sc.overlayLoop);
+  else stopOverlay();
+}
+
+function setLoopVol(v){
+  userLoopVol = parseFloat(v);
+  activeLoop.volume = userLoopVol;
+  // sync both sliders
+  ['sb-loop-vol','mob-loop-vol'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value=v;
+  });
+}
+function setOverlayVol(v){
+  userOverlayVol = parseFloat(v);
+  if(!overlay.paused) overlay.volume = userOverlayVol;
+  ['sb-overlay-vol','mob-overlay-vol'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value=v;
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   FONT SIZE (synced across sidebar + mobile)
+═══════════════════════════════════════════════════ */
+function setFontSize(size, btn, source){
+  document.documentElement.style.setProperty('--reader-font-size', size);
+  // sync both sets of buttons
+  document.querySelectorAll('.font-btn, .mobile-font-btn').forEach(b=>b.classList.remove('active'));
+  // mark the clicked one active, plus its twin in the other panel
+  const idx = Array.from(btn.parentElement.children).indexOf(btn);
+  document.querySelectorAll('.font-btn').forEach((b,i)=>{ if(i===idx) b.classList.add('active'); });
+  document.querySelectorAll('.mobile-font-btn').forEach((b,i)=>{ if(i===idx) b.classList.add('active'); });
+  // repaginate after font change
+  setTimeout(paginateAll, 50);
+}
+
+/* ═══════════════════════════════════════════════════
+   ENTRY POINT
+═══════════════════════════════════════════════════ */
+function goTo(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
+function coverTap(){
+  const intro = document.getElementById('audio-intro');
+  intro.currentTime = 0;
+  intro.volume = 1;
+  intro.play().catch(()=>{});
+  // fade out the tap prompt once music starts
+  const prompt = document.querySelector('.cover-prompt');
+  if(prompt) prompt.style.opacity = '0';
+}
+
+function fadeOutIntro(){
+  const intro = document.getElementById('audio-intro');
+  if(intro.paused) return;
+  const steps = 30, dt = 1500/steps; let s = 0;
+  const t = setInterval(()=>{
+    s++;
+    intro.volume = Math.max(0, 1 - s/steps);
+    if(s >= steps){ clearInterval(t); intro.pause(); intro.currentTime = 0; }
+  }, dt);
+}
+
+function beginReading(){
+  fadeOutIntro();
+  const rs = document.getElementById('reader-section');
+  rs.classList.add('live');
+  goTo('reader-section');
+  // wait for fonts + layout to settle before measuring nav height
+  document.fonts.ready.then(() => {
+    requestAnimationFrame(() => {
+      paginateAll();
+      renderPosition();
+    });
+  });
+}
+
+function finishReading(){
+  hardStopAll();
+  goTo('bonus-tracks');
+}
+
+/* ═══════════════════════════════════════════════════
+   GESTURES + KEYBOARD
+═══════════════════════════════════════════════════ */
+let tx=0, ty=0;
+document.getElementById('page-stack').addEventListener('touchstart',e=>{
+  tx=e.changedTouches[0].screenX; ty=e.changedTouches[0].screenY;
+},{passive:true});
+document.getElementById('page-stack').addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].screenX-tx, dy=e.changedTouches[0].screenY-ty;
+  if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.4){ dx<0?next():prev(); }
+},{passive:true});
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('reader-section').classList.contains('live')) return;
+  if(e.key==='ArrowRight') next();
+  if(e.key==='ArrowLeft')  prev();
+});
+
+/* repaginate on resize (orientation change, window resize) */
+let resizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(paginateAll, 250);
+});
+
+/* ═══════════════════════════════════════════════════
+   BONUS TRACKS
+═══════════════════════════════════════════════════ */
+const bonusTracks = {
+  ellison: document.getElementById('audio-ellison'),
+  drivers: document.getElementById('audio-drivers'),
+  credits: document.getElementById('audio-credits'),
+};
+let bonusKey = null;
+
+function stopBonus(){
+  Object.values(bonusTracks).forEach(a=>{a.pause();a.currentTime=0;});
+  document.querySelectorAll('.st-btn').forEach(b=>{b.innerHTML='&#9654; Play';b.classList.remove('playing');});
+  bonusKey=null;
+  document.getElementById('now-playing').classList.remove('visible');
+}
+
+async function toggleBonus(key, label){
+  const a = bonusTracks[key];
+  if(!a) return;
+  if(bonusKey===key){ a.paused ? await a.play().catch(()=>{}) : a.pause(); }
+  else {
+    hardStopAll();
+    if(bonusKey){ bonusTracks[bonusKey].pause(); bonusTracks[bonusKey].currentTime=0; }
+    bonusKey=key;
+    document.getElementById('np-title').textContent=label;
+    document.getElementById('now-playing').classList.add('visible');
+    a.currentTime=0; a.load(); await a.play().catch(()=>{});
+  }
+  updateBonusBtns();
+}
+
+function updateBonusBtns(){
+  document.querySelectorAll('.st-btn').forEach(b=>{
+    const k=b.id.replace('btn-','');
+    const playing = bonusKey===k && bonusTracks[k] && !bonusTracks[k].paused;
+    b.innerHTML = playing ? '&#9646;&#9646; Pause' : '&#9654; Play';
+    playing ? b.classList.add('playing') : b.classList.remove('playing');
+  });
+}
+Object.entries(bonusTracks).forEach(([k,a])=>{
+  a.addEventListener('ended',()=>{
+    if(bonusKey===k){ bonusKey=null; document.getElementById('now-playing').classList.remove('visible'); updateBonusBtns(); }
+  });
+});
+</script>
+</body>
+</html>
